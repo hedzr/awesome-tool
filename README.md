@@ -46,7 +46,12 @@ As running `awesome-tool`, it'll ask for your github account name and password t
 The access token is used to request [Github API v3](https://developer.github.com/v3/) and [v4](https://developer.github.com/v4/).
 
 
+### Contributors is 0 now
 
+We can't query how many contributors via GitHub API v4, currently.
+
+For saving your querying bandwidth, we ignore this count.
+ 
 
 ## LICENSE
 
