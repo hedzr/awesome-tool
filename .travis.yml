@@ -12,7 +12,7 @@ install:
 script:
   - touch .env
   - make build-ci
-  - go test -coverprofile=coverage.txt -covermode=atomic
+  - go test -coverprofile=coverage.txt -covermode=atomic cli/main.go
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -20,12 +20,11 @@ after_success:
 deploy:
   provider: releases
   api_key:
-    secure: FzXUx9blhyRgivCKC5A48mO38RJ6Li4gIwNn6vIJAsbeLBbTubQgIF8OcUGxOE1JfvA4x9j/nNBEwDKU1TPpvHB5Rdjplayhqk16TDJVHs/D3XCCCXFvUDoSlkoukwLLXJo+daEd45oNpWm/3IWgPQ/bR4lxk+Qj7pUU1yj7S8vlLNtWPTQLSj1dowDLKF8JiCDZ8evL1vyhFqxi8kf07NEyBLv3C26oOseEyG8heIDswaVWty6FRFrD09MCms0oxPQzAk/elncnf1RvSWzrWH4HwTv3lAZMOtEg9jbBQcCRP6mQUFBJU4XeKTqbcQ+I/etJV0ycZQwlPzsCI9Pfg2nkvQsqY2WcTUdNStQXzDBB66Z9kkvgl1lCzQ15rdPLSOVtyQvnxqXzKNFfW2Ce+uYJfkJ5rPsyzWBmgTMmRPFxh16Ym7R6bYS9DdNvRUlWPgxFVpj5wjHmw93WKgQUpe5Iowf1MqEAJIBrHyBq/Os8rnZ3BqXjxajnFjDRwQIvD6F9M0Cz8Niu3mswXn0ZefEVqhBf4bOQo+unnOfYFTlnMqQv5sw6fRPRScjHaFvjKlcyAiT/QEzZ8xA/46BCQsImG8vmTSnz0d70K7XmuGoVpkI1s07teFU/tB141UHFC2CI7Uxkx+XgGIHVivwfIEIWelye52h8g76PXDIwLVc=
-  file:
-    - bin/awesome-tool_linux_amd64.gz
-    - bin/awesome-tool_darwin_amd64.gz
-    - bin/awesome-tool_windows_amd64.exe.gz
+    secure: esIYoFums7dzFHlam6EbQb0SnnS7R9I3TEylfpZRhiAI8cUTJGZN1y+X7hvkFGjIoJWL3hy+aCPwjoGY5zrf/YqUMZoXhCrijrB8wdtIJ4mh/t3oX2u2W5YCVYwzcAjgIkpvRBGr2s1AT1sZdsQXBTap4xNbna1tg3jAuH/p6escLUWFLWXuoZ0J9JMCyYWbY4ghejNFeBYTrkn4OIM1XdGx48rW5lVf9d1QgGoXXnh9jZWhjr1VsiZ4oJnGeum8cuA2hvI7jl9P6xOnlbkMxANvIvVLjSQN4y7uacqA50BUDeupHzYTJ7fYVmnfH9i/AfAruIgBCzRCLc7SsefCoyPDBJQEFpimKQShjlrAkE4BECamiDQvGQtyZkNyOInMFamqpvzgEr7Q2ZF5EFoC/REhNCtwPe2O47xgzjtLtVQBzG/8fVt22OEEHrID7rmNxAZ3Ys/EXZkjhbY45qLQ1rvtu4XKPNuYOQ7FhFUsi6YGrcRdwvbtCLg+8ie+uWRqKk81h/vyRFlN18QU0F+kE5K0axPtbx8cKYrOgtYzdfK9j0JFv2hce82tBR36ixJJm2uCgrnbajPuLCjUHw0dgb015As5F9Zv5PzyDEjxsN77UNkexHm5a4bAaj/aFC/Wez94cSQc0Q+PEcpOzXsynk5pOidMD3FdPIgjTeZcOKw=
+  file: bin/*
   on:
     repo: hedzr/awesome-tool
-    tags: true
+    tags: false
   skip_cleanup: true
+  overwrite: true
+  file_glob: true

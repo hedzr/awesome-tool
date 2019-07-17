@@ -96,11 +96,12 @@ build-ci:
 	@echo "  >  Building binary..."
 	@echo "  >  LDFLAGS = $(LDFLAGS)"
 	$(foreach os, darwin linux windows, \
-	  echo "     Building $(GOBIN)/$(PROJECTNAME)_${GOOS}_${GOARCH}...$(os)"; \
+	  echo "     Building $(GOBIN)/$(PROJECTNAME)_$(os)_$(goarch)...$(os)"; \
 	      GOARCH="$(goarch)" GOOS="$(os)" GOPATH="$(GOPATH)" GOBIN="$(GOBIN)" GO111MODULE="$(GO111MODULE)" GOPROXY="$(GOPROXY)" \
 	        go build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(PROJECTNAME)_$(os)_$(goarch) $(GOBASE)/cli/main.go; \
 	        gzip $(GOBIN)/$(PROJECTNAME)_$(os)_$(goarch); \
 	)
+	@ls -la $(GOBIN)/*
 
 go-build:
 	@echo "  >  Building binary..."
