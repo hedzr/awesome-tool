@@ -24,7 +24,7 @@ deploy:
   file: bin/*
   on:
     repo: hedzr/awesome-tool
-    tags: false
+    tags: true
   skip_cleanup: true
   overwrite: true
   file_glob: true
