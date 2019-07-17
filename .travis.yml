@@ -1,0 +1,20 @@
+language: go
+go:
+- tip
+install:
+- go mod download
+script:
+- make build-ci
+- go test -coverprofile=coverage.txt -covermode=atomic
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+deploy:
+  provider: releases
+  api_key:
+    secure: FzXUx9blhyRgivCKC5A48mO38RJ6Li4gIwNn6vIJAsbeLBbTubQgIF8OcUGxOE1JfvA4x9j/nNBEwDKU1TPpvHB5Rdjplayhqk16TDJVHs/D3XCCCXFvUDoSlkoukwLLXJo+daEd45oNpWm/3IWgPQ/bR4lxk+Qj7pUU1yj7S8vlLNtWPTQLSj1dowDLKF8JiCDZ8evL1vyhFqxi8kf07NEyBLv3C26oOseEyG8heIDswaVWty6FRFrD09MCms0oxPQzAk/elncnf1RvSWzrWH4HwTv3lAZMOtEg9jbBQcCRP6mQUFBJU4XeKTqbcQ+I/etJV0ycZQwlPzsCI9Pfg2nkvQsqY2WcTUdNStQXzDBB66Z9kkvgl1lCzQ15rdPLSOVtyQvnxqXzKNFfW2Ce+uYJfkJ5rPsyzWBmgTMmRPFxh16Ym7R6bYS9DdNvRUlWPgxFVpj5wjHmw93WKgQUpe5Iowf1MqEAJIBrHyBq/Os8rnZ3BqXjxajnFjDRwQIvD6F9M0Cz8Niu3mswXn0ZefEVqhBf4bOQo+unnOfYFTlnMqQv5sw6fRPRScjHaFvjKlcyAiT/QEzZ8xA/46BCQsImG8vmTSnz0d70K7XmuGoVpkI1s07teFU/tB141UHFC2CI7Uxkx+XgGIHVivwfIEIWelye52h8g76PXDIwLVc=
+  file:
+    - bin/awesome-tool_linux_amd64.gz
+    - bin/awesome-tool_darwin_amd64.gz
+    - bin/awesome-tool_windows_amd64.exe.gz
+  on:
+    repo: hedzr/awesome-tool

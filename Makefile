@@ -92,13 +92,14 @@ GITHASH=$(shell git rev-parse HEAD)
 GOVERSION=$(shell go version)
 LDFLAGS=-s -w -X '$(W_PKG).Buildstamp=$(TIMESTAMP)' -X '$(W_PKG).Githash=$(GITHASH)' -X '$(W_PKG).GoVersion=$(GOVERSION)' -X '$(W_PKG).Version=$(VERSION)' -X '$(W_PKG).AppName=$(APPNAME)'
 
-go-ci:
+build-ci:
 	@echo "  >  Building binary..."
 	@echo "  >  LDFLAGS = $(LDFLAGS)"
 	$(foreach os, darwin linux windows, \
 	  echo "     Building $(GOBIN)/$(PROJECTNAME)_${GOOS}_${GOARCH}...$(os)"; \
 	      GOARCH="$(goarch)" GOOS="$(os)" GOPATH="$(GOPATH)" GOBIN="$(GOBIN)" GO111MODULE="$(GO111MODULE)" GOPROXY="$(GOPROXY)" \
 	        go build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(PROJECTNAME)_$(os)_$(goarch) $(GOBASE)/cli/main.go; \
+	        gzip $(GOBIN)/$(PROJECTNAME)_$(os)_$(goarch); \
 	)
 
 go-build:
