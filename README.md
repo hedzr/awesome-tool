@@ -1,5 +1,7 @@
 # awesome-tool
 
+[![Build Status](https://travis-ci.com/hedzr/awesome-tool.svg?branch=master)](https://travis-ci.com/hedzr/awesome-tool)
+
 `awesome-tool` is an command-line tool to retrieve the stars of all repos in an awesome-list (such as [awesome-go](https://github.com/avelino/awesome-go).
 
 
