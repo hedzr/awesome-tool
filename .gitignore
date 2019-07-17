@@ -33,6 +33,8 @@ cover.out
 cover.html
 .tmp.*
 
+.env
+
 output/
 target/
 build/
