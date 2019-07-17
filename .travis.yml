@@ -1,13 +1,22 @@
 language: go
+
 go:
-- tip
+  - tip
+
+env:
+  - GO111MODULE=on
+
 install:
-- go mod download
+  - go mod download
+
 script:
-- make build-ci
-- go test -coverprofile=coverage.txt -covermode=atomic
+  - touch .env
+  - make build-ci
+  - go test -coverprofile=coverage.txt -covermode=atomic
+
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
+
 deploy:
   provider: releases
   api_key:
@@ -18,3 +27,5 @@ deploy:
     - bin/awesome-tool_windows_amd64.exe.gz
   on:
     repo: hedzr/awesome-tool
+    tags: true
+  skip_cleanup: true
