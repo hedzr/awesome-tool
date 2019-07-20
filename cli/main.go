@@ -80,7 +80,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	boCmd.NewFlag(cmdr.OptFlagTypeString).
 		Titles("n", "name").
 		Description("main name", ``).
-		DefaultValue("awesome-go", "NAME")
+		DefaultValue("", "NAME")
 
 	boCmd.NewFlag(cmdr.OptFlagTypeBool).
 		Titles("1", "first-loop", "1st").
@@ -123,7 +123,7 @@ $ {{.AppName}} --help
 `
 	examplesBuildOne = `
 $ {{.AppName}} build one --name=awesome-go --source=https://github.com/avelino/awesome-go --work-dir=./output
-  build the repo stars list for awesome-go list.
+  build the repo stars list for awesome-go list. 'name' is optional.
 `
 	overview = ``
 )

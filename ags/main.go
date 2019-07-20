@@ -7,6 +7,7 @@ package ags
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/hedzr/awesome-tool/ags/gh"
 	"github.com/hedzr/awesome-tool/ags/gql"
@@ -51,6 +52,14 @@ func Main() (err error) {
 
 	if err = cmdr.EnsureDir(workDir); err != nil {
 		return
+	}
+
+	if len(name) == 0 {
+		if i := strings.LastIndex(topUrl, "/"); i >= 0 {
+			name = topUrl[i+1:]
+		} else {
+			return errors.New("'name' must NOT be empty string.")
+		}
 	}
 
 	infoMd := path.Join(workDir, "info.md")
