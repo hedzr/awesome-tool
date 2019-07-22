@@ -3,7 +3,7 @@ module github.com/hedzr/awesome-tool
 go 1.12
 
 require (
-	github.com/hedzr/cmdr v1.0.1
+	github.com/hedzr/cmdr v1.0.3
 	github.com/hedzr/logex v1.0.0
 	github.com/machinebox/graphql v0.2.2
 	github.com/matryer/is v1.2.0 // indirect
