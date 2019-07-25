@@ -33,8 +33,16 @@ func Main() (err error) {
 	// logrus.SetLevel(logrus.DebugLevel)
 	// logex.Enable()
 
-	name := cmdr.GetStringR("build.one.name")
 	topUrl := cmdr.GetStringR("build.one.source")
+	name := cmdr.GetStringR("build.one.name")
+	if len(name) == 0 {
+		if i := strings.LastIndex(topUrl, "/"); i >= 0 {
+			name = topUrl[i+1:]
+		} else {
+			return errors.New("'name' must NOT be empty string.")
+		}
+	}
+
 	workDir := path.Join(cmdr.GetStringR("build.one.work-dir"), name)
 	README := fmt.Sprintf("%v/raw/master/README.md", topUrl)
 	readmeLocal := fmt.Sprintf("%v/%v", workDir, "index.md")
@@ -54,13 +62,11 @@ func Main() (err error) {
 		return
 	}
 
-	if len(name) == 0 {
-		if i := strings.LastIndex(topUrl, "/"); i >= 0 {
-			name = topUrl[i+1:]
-		} else {
-			return errors.New("'name' must NOT be empty string.")
-		}
-	}
+	fmt.Printf(`
+    name: %v
+     url: %v
+work dir: %v
+`, name, topUrl, workDir)
 
 	infoMd := path.Join(workDir, "info.md")
 	_ = ioutil.WriteFile(infoMd, []byte(fmt.Sprintf("# %v\n\n%v", name, topUrl)), 0644)
@@ -118,6 +124,8 @@ func Main() (err error) {
 				continue
 			}
 
+			respData = make(gql.GhRes)
+
 			logrus.Debug("  ..querying with github api. ", sec.Header)
 
 			// schema := graphql.MustParseSchema(ql, &query{})
@@ -129,6 +137,7 @@ func Main() (err error) {
 			_ = ioutil.WriteFile(gqlFile, []byte(ql), 0644)
 
 			client := graphql.NewClient(gh.ApiEntryV4)
+			client.Log = func(s string) { logrus.Debug(s) }
 			req := gh.GhApplyToken(graphql.NewRequest(ql))
 			// req.Var("key", "value")
 			logrus.Debug("  ..querying now")
@@ -207,6 +216,9 @@ func Main() (err error) {
 		for i, k := range keys {
 			v := rrr[k]
 			s := sec.List[v.Index]
+			if v.Repo == "cmdr" {
+				logrus.Print()
+			}
 			v.RepoUrl = fmt.Sprintf("%s/%s", v.Owner, v.Repo)
 
 			_, _ = fmt.Fprintf(out, `

@@ -59,6 +59,9 @@ func GhRequestToken() (token string) {
 
 		logrus.Debugf("  ..request and create authorization")
 
+		fingerprint, ftimes := "awesome-tool.stats", 1
+
+	RETRY_GET_TOKEN:
 		// req and get an new authorization
 		url := fmt.Sprintf("https://api.github.com/authorizations/clients/%v", ClientID)
 		body := fmt.Sprintf(`{
@@ -67,8 +70,8 @@ func GhRequestToken() (token string) {
     "public_repo"
   ],
   "note": "asgo-stats app",
-  "fingerprint": "asgo.stats"
-}`, ClientSecret)
+  "fingerprint": "%v"
+}`, ClientSecret, fingerprint)
 
 		var ok bool
 		var gr = make(map[string]interface{})
@@ -77,14 +80,18 @@ func GhRequestToken() (token string) {
 		if token, ok = gr["token"].(string); ok {
 			if len(token) == 0 {
 				if token, ok = gr["hashed_token"].(string); ok {
-					_ = ioutil.WriteFile(os.ExpandEnv(asgoStatsTokenFilename), []byte(token), 0600)
-					return
+					// _ = ioutil.WriteFile(os.ExpandEnv(asgoStatsTokenFilename), []byte(token), 0600)
+					logrus.Warnf("The token for fingerprint '%v' cannot be re-fetched, you MUST have to request a new one.", fingerprint)
+					fingerprint = fmt.Sprintf("awesome-tool.stats.%d", ftimes)
+					ftimes++
+					goto RETRY_GET_TOKEN
 				}
 
 				url = gr["url"].(string)
 				gr = httpReadJson("GET", url, "")
 			}
 			_ = ioutil.WriteFile(os.ExpandEnv(asgoStatsTokenFilename), []byte(token), 0600)
+			logrus.Infof(`token: %v (hashed: %v), updated at: %v. fingerprint is %v`, gr["token"], gr["hashed_token"], gr["updated_at"], fingerprint)
 		}
 
 	}
