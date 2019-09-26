@@ -23,14 +23,12 @@ func Entry() {
 	// logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
 	logex.Enable()
 
-	// To disable internal commands and flags, uncomment the following codes
-	// cmdr.EnableVersionCommands = false
-	// cmdr.EnableVerboseCommands = false
-	// cmdr.EnableCmdrCommands = false
-	// cmdr.EnableHelpCommands = false
-	// cmdr.EnableGenerateCommands = false
-
-	if err := cmdr.Exec(buildRootCmd()); err != nil {
+	if err := cmdr.Exec(buildRootCmd(),
+		// To disable internal commands and flags, uncomment the following codes
+		// cmdr.WithBuiltinCommands(false, false, false, false, false),
+		// daemon.WithDaemon(svr.NewDaemon(), nil, nil, nil),
+		// cmdr.WithHelpTabStop(40),
+	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}
 
