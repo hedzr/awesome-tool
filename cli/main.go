@@ -8,7 +8,6 @@ import (
 	awesome_tool "github.com/hedzr/awesome-tool"
 	"github.com/hedzr/awesome-tool/ags"
 	"github.com/hedzr/cmdr"
-	"github.com/hedzr/logex"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,13 +20,15 @@ func Entry() {
 
 	// logrus.SetLevel(logrus.DebugLevel)
 	// logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
-	logex.EnableWith(logrus.DebugLevel)
+	// logex.EnableWith(logrus.DebugLevel)
 
 	if err := cmdr.Exec(buildRootCmd(),
 		// To disable internal commands and flags, uncomment the following codes
 		// cmdr.WithBuiltinCommands(false, false, false, false, false),
 		// daemon.WithDaemon(svr.NewDaemon(), nil, nil, nil),
 		// cmdr.WithHelpTabStop(40),
+		cmdr.WithLogex(logrus.DebugLevel),
+		cmdr.WithWatchMainConfigFileToo(true),
 	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}
