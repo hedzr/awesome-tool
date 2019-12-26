@@ -7,11 +7,14 @@ package gql_test
 import (
 	"encoding/json"
 	"github.com/hedzr/awesome-tool/ags/gql"
+	"github.com/hedzr/logex"
 	"io/ioutil"
 	"testing"
 )
 
 func TestGhResultJson(t *testing.T) {
+	defer logex.CaptureLog(t).Release()
+
 	b, err := ioutil.ReadFile("../../ags.result.json")
 	if err != nil {
 		t.Log(err)

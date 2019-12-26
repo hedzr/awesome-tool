@@ -5,7 +5,7 @@
 package main
 
 import (
-	awesome_tool "github.com/hedzr/awesome-tool"
+	"github.com/hedzr/awesome-tool"
 	"github.com/hedzr/awesome-tool/ags"
 	"github.com/hedzr/cmdr"
 	"github.com/sirupsen/logrus"

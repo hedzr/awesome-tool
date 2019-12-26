@@ -7,11 +7,11 @@ package ags
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/hedzr/awesome-tool/ags/gh"
 	"github.com/hedzr/awesome-tool/ags/gql"
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/errors"
 	"github.com/russross/blackfriday"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
