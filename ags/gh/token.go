@@ -170,11 +170,11 @@ func httpReadJson(method, url, body string) (r map[string]interface{}) {
 
 			var buf bytes.Buffer
 			if _, err := io.Copy(&buf, resp.Body); err != nil {
-				logrus.Fatal(errors.Wrap(err, "reading body"))
+				logrus.Fatal(errors.New("reading body").Attach(err))
 			}
 			logrus.Debugf("<< %s", buf.String())
 			if err := json.NewDecoder(&buf).Decode(&r); err != nil {
-				logrus.Fatal(errors.Wrap(err, "decoding response"))
+				logrus.Fatal(errors.New("decoding response").Attach(err))
 			}
 		}
 	}
