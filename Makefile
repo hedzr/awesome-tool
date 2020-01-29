@@ -83,6 +83,9 @@ exec:
 clean:
 	@(MAKEFILE) go-clean
 
+## build: Compile the binary.
+build: go-compile
+
 go-compile: go-clean go-get go-build
 
 goarch=amd64
@@ -110,6 +113,7 @@ go-build:
 	  go build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(PROJECTNAME) $(GOBASE)/cli/main.go
 	# go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)
 	# chmod +x $(GOBIN)/*
+	ls -la $(GOBIN)/$(PROJECTNAME)
 
 go-generate:
 	@echo "  >  Generating dependency files..."
@@ -167,6 +171,15 @@ go-cyclo:
 	gocyclo -top 20 .
 
 
+## run: build, and test, ...
+run: go-build
+	@echo "  >  run ..."
+	$(GOBIN)/$(PROJECTNAME) build one \
+		--name=awesome-go \
+		--source=https://github.com/avelino/awesome-go \
+		--work-dir=./output
+
+
 .PHONY: help
 all: help
 help: Makefile
@@ -175,4 +188,3 @@ help: Makefile
 	@echo
 	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
 	@echo
-
