@@ -2,7 +2,7 @@ include .env
 # ref: https://kodfabrik.com/journal/a-good-makefile-for-go/
 
 PROJECTNAME=$(shell basename "$(PWD)")
-APPNAME=$(shell grep -E "AppName[ \t]+=[ \t]+" doc.go|grep -Eo "\\\".+\\\"")
+APPNAME=$(patsubst "%",%,$(shell grep -E "AppName[ \t]+=[ \t]+" doc.go|grep -Eo "\\\".+\\\""))
 VERSION=$(shell grep -E "Version[ \t]+=[ \t]+" doc.go|grep -Eo "[0-9.]+")
 
 # Go related variables.
