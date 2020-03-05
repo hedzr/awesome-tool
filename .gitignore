@@ -67,3 +67,6 @@ main
 
 # some
 internal/
+
+node_modules/
+package-lock.json
