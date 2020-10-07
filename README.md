@@ -14,6 +14,10 @@ awesome-tool build one \
     --name=awesome-go \
     --source=https://github.com/avelino/awesome-go \
     --work-dir=./output
+
+# The results is stored in:
+ls -la ./output/aweesome-go/
+# open ./output/aweesome-go/output.md  # open it in default browser, such as chrome, ...
 ```
 
 <!-- TODO
@@ -31,7 +35,7 @@ awesome-tool build all \
 
 ### Result
 
-The results is an markdown file `output/awesome-xxx/output.md`, its preview looks like:
+The main result is a markdown file `output/awesome-xxx/output.md`, its preview looks like:
 
 ![ago-mkd-preview](docs/images/ago-mkd-preview.png)
 
