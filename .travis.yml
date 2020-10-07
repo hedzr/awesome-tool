@@ -17,15 +17,15 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
-deploy:
-  provider: releases
-  api_key:
-    secure: esIYoFums7dzFHlam6EbQb0SnnS7R9I3TEylfpZRhiAI8cUTJGZN1y+X7hvkFGjIoJWL3hy+aCPwjoGY5zrf/YqUMZoXhCrijrB8wdtIJ4mh/t3oX2u2W5YCVYwzcAjgIkpvRBGr2s1AT1sZdsQXBTap4xNbna1tg3jAuH/p6escLUWFLWXuoZ0J9JMCyYWbY4ghejNFeBYTrkn4OIM1XdGx48rW5lVf9d1QgGoXXnh9jZWhjr1VsiZ4oJnGeum8cuA2hvI7jl9P6xOnlbkMxANvIvVLjSQN4y7uacqA50BUDeupHzYTJ7fYVmnfH9i/AfAruIgBCzRCLc7SsefCoyPDBJQEFpimKQShjlrAkE4BECamiDQvGQtyZkNyOInMFamqpvzgEr7Q2ZF5EFoC/REhNCtwPe2O47xgzjtLtVQBzG/8fVt22OEEHrID7rmNxAZ3Ys/EXZkjhbY45qLQ1rvtu4XKPNuYOQ7FhFUsi6YGrcRdwvbtCLg+8ie+uWRqKk81h/vyRFlN18QU0F+kE5K0axPtbx8cKYrOgtYzdfK9j0JFv2hce82tBR36ixJJm2uCgrnbajPuLCjUHw0dgb015As5F9Zv5PzyDEjxsN77UNkexHm5a4bAaj/aFC/Wez94cSQc0Q+PEcpOzXsynk5pOidMD3FdPIgjTeZcOKw=
-  file: bin/*
-  on:
-    repo: hedzr/awesome-tool
-    tags: true
-    #branch: master
-  skip_cleanup: true
-  overwrite: true
-  file_glob: true
+#deploy:
+#  provider: releases
+#  api_key:
+#    secure: esIYoFums7dzFHlam6EbQb0SnnS7R9I3TEylfpZRhiAI8cUTJGZN1y+X7hvkFGjIoJWL3hy+aCPwjoGY5zrf/YqUMZoXhCrijrB8wdtIJ4mh/t3oX2u2W5YCVYwzcAjgIkpvRBGr2s1AT1sZdsQXBTap4xNbna1tg3jAuH/p6escLUWFLWXuoZ0J9JMCyYWbY4ghejNFeBYTrkn4OIM1XdGx48rW5lVf9d1QgGoXXnh9jZWhjr1VsiZ4oJnGeum8cuA2hvI7jl9P6xOnlbkMxANvIvVLjSQN4y7uacqA50BUDeupHzYTJ7fYVmnfH9i/AfAruIgBCzRCLc7SsefCoyPDBJQEFpimKQShjlrAkE4BECamiDQvGQtyZkNyOInMFamqpvzgEr7Q2ZF5EFoC/REhNCtwPe2O47xgzjtLtVQBzG/8fVt22OEEHrID7rmNxAZ3Ys/EXZkjhbY45qLQ1rvtu4XKPNuYOQ7FhFUsi6YGrcRdwvbtCLg+8ie+uWRqKk81h/vyRFlN18QU0F+kE5K0axPtbx8cKYrOgtYzdfK9j0JFv2hce82tBR36ixJJm2uCgrnbajPuLCjUHw0dgb015As5F9Zv5PzyDEjxsN77UNkexHm5a4bAaj/aFC/Wez94cSQc0Q+PEcpOzXsynk5pOidMD3FdPIgjTeZcOKw=
+#  file: bin/*
+#  on:
+#    repo: hedzr/awesome-tool
+#    tags: true
+#    #branch: master
+#  skip_cleanup: true
+#  overwrite: true
+#  file_glob: true
