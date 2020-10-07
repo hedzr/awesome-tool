@@ -35,7 +35,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Test
-        run: go test ./...
+        run: |
+          GIT_REV=$(git rev-parse --short HEAD)
+          BUILDTIME=$(date -u '+%Y-%m-%d_%H-%M-%S')
+          GOVERSION=$(go version)
+          W_PKG=github.com/hedzr/cmdr/conf
+          LDFLAGS="-s -w \
+            -X '$(W_PKG).Buildstamp=$(BUILDTIME)' \
+            -X '$(W_PKG).Githash=$(GIT_REVISION)' \
+            -X '$(W_PKG).GoVersion=$(GOVERSION)' \
+            -X '$(W_PKG).Version=$(VERSION)'"
+          go build -v -ldflags "$LDFLAGS" -o main ./cli
+          rm main
+          go test ./...
 
   coverage:
     needs: test
@@ -93,11 +105,11 @@ jobs:
           BUILDTIME=$(date -u '+%Y-%m-%d_%H-%M-%S')
           GOVERSION=$(go version)
           W_PKG=github.com/hedzr/cmdr/conf
-          LDFLAGS := -s -w \
+          LDFLAGS="-s -w \
             -X '$(W_PKG).Buildstamp=$(BUILDTIME)' \
             -X '$(W_PKG).Githash=$(GIT_REVISION)' \
             -X '$(W_PKG).GoVersion=$(GOVERSION)' \
-            -X '$(W_PKG).Version=$(VERSION)'
+            -X '$(W_PKG).Version=$(VERSION)'"
           for dir in .; do
             for GOOS in windows linux darwin; do
               for GOARCH in amd64; do
