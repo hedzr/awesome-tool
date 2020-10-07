@@ -1,6 +1,12 @@
 # awesome-tool
 
+![Go](https://github.com/hedzr/awesome-tool/workflows/Go/badge.svg)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/hedzr/awesome-tool.svg?label=release)](https://github.com/hedzr/awesome-tool/releases)
+[![](https://img.shields.io/badge/go-dev-green)](https://pkg.go.dev/github.com/hedzr/awesome-tool)
+
+<!--
 [![Build Status](https://travis-ci.com/hedzr/awesome-tool.svg?branch=master)](https://travis-ci.com/hedzr/awesome-tool)
+-->
 
 `awesome-tool` is a command-line tool to retrieve the stars of all repos in an awesome-list (such as [awesome-go](https://github.com/avelino/awesome-go).
 
