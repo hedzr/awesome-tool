@@ -8,7 +8,7 @@ import (
 	"github.com/hedzr/awesome-tool"
 	"github.com/hedzr/awesome-tool/ags"
 	"github.com/hedzr/cmdr"
-	"github.com/sirupsen/logrus"
+	"github.com/hedzr/logex/build"
 )
 
 func main() {
@@ -27,10 +27,11 @@ func Entry() {
 		// cmdr.WithBuiltinCommands(false, false, false, false, false),
 		// daemon.WithDaemon(svr.NewDaemon(), nil, nil, nil),
 		// cmdr.WithHelpTabStop(40),
-		cmdr.WithLogex(logrus.DebugLevel),
+		//cmdr.WithLogex(logrus.DebugLevel),
+		cmdr.WithLogx(build.New(build.NewLoggerConfigWith(true, "logrus", "debug"))),
 		cmdr.WithWatchMainConfigFileToo(true),
 	); err != nil {
-		logrus.Errorf("Error: %v", err)
+		cmdr.Logger.Errorf("Error: %v", err)
 	}
 
 }
@@ -58,39 +59,39 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	// build
 
 	buildCmd := root.NewSubCommand().
-		Titles("b", "build").
+		Titles("build", "b").
 		Description("building operations...", ``)
 
 	// attachConsulConnectFlags(buildCmd)
 
 	boCmd := buildCmd.NewSubCommand().
-		Titles("1", "one").
+		Titles("one", "1").
 		Description("Build a repos' stars page for an awesome-list", ``).
 		Examples(examplesBuildOne).
 		Action(buildOne)
 	boCmd.NewFlag(cmdr.OptFlagTypeString).
-		Titles("w", "work-dir", "wdir", "wd").
+		Titles("work-dir", "w", "wdir", "wd").
 		Description("working directory", ``).
 		DefaultValue("./output", "DIR")
 	boCmd.NewFlag(cmdr.OptFlagTypeString).
-		Titles("s", "source", "src", "src-url").
+		Titles("source", "s", "src", "src-url").
 		Description("the source awesomeness repo url", ``).
 		DefaultValue("https://github.com/avelino/awesome-go", "URL")
 	boCmd.NewFlag(cmdr.OptFlagTypeString).
-		Titles("n", "name").
+		Titles("name", "n").
 		Description("main name", ``).
 		DefaultValue("", "NAME")
 
 	boCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("1", "first-loop", "1st").
+		Titles("first-loop", "1", "1st").
 		Description("stop at end of first loop", ``).
 		DefaultValue(false, "")
 	boCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("2", "2nd-loop", "2nd").
+		Titles("2nd-loop", "2", "2nd").
 		Description("stop at end of second loop", ``).
 		DefaultValue(false, "")
 	boCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("5", "5th-loop", "5th").
+		Titles("5th-loop", "5", "5th").
 		Description("stop at end of fifth loop", ``).
 		DefaultValue(false, "")
 

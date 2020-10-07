@@ -10,8 +10,8 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/hedzr/cmdr"
 	"github.com/machinebox/graphql"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/hedzr/errors.v2"
 	"io"
@@ -34,8 +34,8 @@ const (
 	asgoStatsTokenFilename = "$HOME/.asg.stats.token"
 )
 
-func GhApplyToken(req *graphql.Request) *graphql.Request {
-	req.Header["Authorization"] = []string{"token " + GhRequestToken()}
+func ApplyToken(req *graphql.Request) *graphql.Request {
+	req.Header["Authorization"] = []string{"token " + RequestToken()}
 	return req
 }
 
@@ -46,22 +46,22 @@ func firstLine(s string) string {
 	return s
 }
 
-func GhRequestToken() (token string) {
+func RequestToken() (token string) {
 	token = os.Getenv("ASGO_STATS_TOKEN")
 	if len(token) == 0 {
 		if b, err := ioutil.ReadFile(os.ExpandEnv(asgoStatsTokenFilename)); err == nil {
 			token = firstLine(string(b))
 			if len(token) == 40 {
-				// logrus.Debugf("  ..using existed token : %v", token)
+				// cmdr.Logger.Debugf("  ..using existed token : %v", token)
 				return
 			}
 		}
 
-		logrus.Debugf("  ..request and create authorization")
+		cmdr.Logger.Debugf("  ..request and create authorization")
 
-		fingerprint, ftimes := "awesome-tool.stats", 1
+		fingerprint, fTimes := "awesome-tool.stats", 1
 
-	RETRY_GET_TOKEN:
+	RetryGetToken:
 		// req and get an new authorization
 		url := fmt.Sprintf("https://api.github.com/authorizations/clients/%v", ClientID)
 		body := fmt.Sprintf(`{
@@ -76,29 +76,29 @@ func GhRequestToken() (token string) {
 		var ok bool
 		var gr = make(map[string]interface{})
 		gr = httpReadJson("PUT", url, body)
-		logrus.Debugf(`token: %v (hashed: %v), updated at: %v`, gr["token"], gr["hashed_token"], gr["updated_at"])
+		cmdr.Logger.Debugf(`token: %v (hashed: %v), updated at: %v`, gr["token"], gr["hashed_token"], gr["updated_at"])
 		if token, ok = gr["token"].(string); ok {
 			if len(token) == 0 {
 				if token, ok = gr["hashed_token"].(string); ok {
 					// _ = ioutil.WriteFile(os.ExpandEnv(asgoStatsTokenFilename), []byte(token), 0600)
-					logrus.Warnf("The token for fingerprint '%v' cannot be re-fetched, you MUST have to request a new one.", fingerprint)
-					fingerprint = fmt.Sprintf("awesome-tool.stats.%d", ftimes)
-					ftimes++
-					goto RETRY_GET_TOKEN
+					cmdr.Logger.Warnf("The token for fingerprint '%v' cannot be re-fetched, you MUST have to request a new one.", fingerprint)
+					fingerprint = fmt.Sprintf("awesome-tool.stats.%d", fTimes)
+					fTimes++
+					goto RetryGetToken
 				}
 
 				url = gr["url"].(string)
 				gr = httpReadJson("GET", url, "")
 			}
 			_ = ioutil.WriteFile(os.ExpandEnv(asgoStatsTokenFilename), []byte(token), 0600)
-			logrus.Infof(`token: %v (hashed: %v), updated at: %v. fingerprint is %v`, gr["token"], gr["hashed_token"], gr["updated_at"], fingerprint)
+			cmdr.Logger.Infof(`token: %v (hashed: %v), updated at: %v. fingerprint is %v`, gr["token"], gr["hashed_token"], gr["updated_at"], fingerprint)
 		}
 
 	}
 	return
 }
 
-func GhHttpClient() *http.Client {
+func GithubHttpClient() *http.Client {
 	h := &http.Client{}
 	return h
 }
@@ -136,7 +136,7 @@ func httpReadJson(method, url, body string) (r map[string]interface{}) {
 	var requestBody bytes.Buffer
 	requestBody.WriteString(body)
 	if req, err := http.NewRequest(method, url, &requestBody); err != nil {
-		logrus.Fatal(err)
+		cmdr.Logger.Fatalf("error: %v", err)
 	} else {
 		// req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Accept", "application/json; charset=utf-8")
@@ -148,33 +148,33 @@ func httpReadJson(method, url, body string) (r map[string]interface{}) {
 		if len(password) == 0 {
 			password = readPassword("Enter your GitHub password: ")
 		}
-		// logrus.Debugf("  > %v:%v", username, password)
+		// cmdr.Logger.Debugf("  > %v:%v", username, password)
 		req.SetBasicAuth(username, password)
 
 		trans := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: false}}
 		client := &http.Client{Timeout: 300 * time.Second, Transport: trans}
 
-		logrus.Debug("Headers requesting:")
+		cmdr.Logger.Debugf("Headers requesting:")
 		for k, v := range req.Header {
-			logrus.Debugf("  - %v: %v", k, v)
+			cmdr.Logger.Debugf("  - %v: %v", k, v)
 		}
 
 		if resp, err := client.Do(req); err != nil {
-			logrus.Fatal(err)
+			cmdr.Logger.Fatalf("error: %v", err)
 		} else {
 			defer resp.Body.Close()
-			logrus.Debug("Headers returns:")
+			cmdr.Logger.Debugf("Headers returns:")
 			for k, v := range resp.Header {
-				logrus.Debugf("  - %v: %v", k, v)
+				cmdr.Logger.Debugf("  - %v: %v", k, v)
 			}
 
 			var buf bytes.Buffer
 			if _, err := io.Copy(&buf, resp.Body); err != nil {
-				logrus.Fatal(errors.New("reading body").Attach(err))
+				cmdr.Logger.Fatalf("error: %v", errors.New("reading body").Attach(err))
 			}
-			logrus.Debugf("<< %s", buf.String())
+			cmdr.Logger.Debugf("<< %s", buf.String())
 			if err := json.NewDecoder(&buf).Decode(&r); err != nil {
-				logrus.Fatal(errors.New("decoding response").Attach(err))
+				cmdr.Logger.Fatalf("error: %v", errors.New("decoding response").Attach(err))
 			}
 		}
 	}

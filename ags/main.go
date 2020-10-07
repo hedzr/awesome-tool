@@ -11,13 +11,14 @@ import (
 	"github.com/hedzr/awesome-tool/ags/gh"
 	"github.com/hedzr/awesome-tool/ags/gql"
 	"github.com/hedzr/cmdr"
-	"github.com/russross/blackfriday"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/hedzr/errors.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	// "github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 
 	// graphql "github.com/graph-gophers/graphql-go"
 	// "github.com/graph-gophers/graphql-go/relay"
@@ -85,8 +86,8 @@ work dir: %v
 	r := newMarkdownRenderer()
 	output := blackfriday.Run(input, blackfriday.WithRenderer(r))
 
-	logrus.Infof("output: %v", output)
-	// logrus.Infof("r: %v", r)
+	cmdr.Logger.Infof("output: %v", output)
+	// cmdr.Logger.Infof("r: %v", r)
 
 	if out, err = os.Create(outLocal); err != nil {
 		return
@@ -103,17 +104,17 @@ work dir: %v
 		_ = cmdr.EnsureDir(path.Dir(jsonFile))
 
 		if cmdr.FileExists(jsonFile) {
-			logrus.Debugf("  ..loading existed json result from %v", jsonFile)
+			cmdr.Logger.Debugf("  ..loading existed json result from %v", jsonFile)
 			var b []byte
 			b, err = ioutil.ReadFile(jsonFile)
 			if err != nil {
-				// logrus.Fatal(err)
+				// cmdr.Logger.Fatal(err)
 				return
 			}
 
 			err = json.Unmarshal(b, &respData)
 			if err != nil {
-				// logrus.Fatal(err)
+				// cmdr.Logger.Fatal(err)
 				return
 			}
 
@@ -126,21 +127,21 @@ work dir: %v
 
 			respData = make(gql.GhRes)
 
-			logrus.Debug("  ..querying with github api. ", sec.Header)
+			cmdr.Logger.Debugf("  ..querying with github api. %v", sec.Header)
 
 			// schema := graphql.MustParseSchema(ql, &query{})
 			// http.Handle("/query", &relay.Handler{Schema: schema})
-			// logrus.Fatal(http.ListenAndServe(":8080", nil))
+			// cmdr.Logger.Fatal(http.ListenAndServe(":8080", nil))
 
 			gqlFile := fmt.Sprintf("%v/gql/%v", workDir, "query.graphql")
 			_ = cmdr.EnsureDir(path.Dir(gqlFile))
 			_ = ioutil.WriteFile(gqlFile, []byte(ql), 0644)
 
 			client := graphql.NewClient(gh.ApiEntryV4)
-			client.Log = func(s string) { logrus.Debug(s) }
-			req := gh.GhApplyToken(graphql.NewRequest(ql))
+			client.Log = func(s string) { cmdr.Logger.Debugf("%v", s) }
+			req := gh.ApplyToken(graphql.NewRequest(ql))
 			// req.Var("key", "value")
-			logrus.Debug("  ..querying now")
+			cmdr.Logger.Debugf("  ..querying now")
 			if err = client.Run(context.Background(), req, &respData); err != nil {
 				// graphql: Could not resolve to a User with the username 'Equilibrium-Games'
 				if strings.Index(err.Error(), "Could not resolve to a User with the username") >= 0 {
@@ -164,14 +165,14 @@ work dir: %v
 						goto RETRY_QL
 					}
 				}
-				logrus.Error(err)
+				cmdr.Logger.Errorf("error: %v", err)
 				return
 			}
 
-			logrus.Debug("    resp: ", respData)
+			cmdr.Logger.Debugf("    resp: %v", respData)
 			b, _ := json.MarshalIndent(respData, "", "  ")
 			if err = ioutil.WriteFile(jsonFile, b, 0644); err != nil {
-				// logrus.Fatal(err)
+				// cmdr.Logger.Fatal(err)
 				return
 			}
 		}
@@ -217,7 +218,7 @@ work dir: %v
 			v := rrr[k]
 			s := sec.List[v.Index]
 			if v.Repo == "cmdr" {
-				logrus.Print()
+				cmdr.Logger.Printf("")
 			}
 			v.RepoUrl = fmt.Sprintf("%s/%s", v.Owner, v.Repo)
 

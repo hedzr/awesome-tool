@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"github.com/hedzr/awesome-tool/ags/gql"
 	"github.com/hedzr/cmdr"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -38,11 +37,11 @@ func sortMap(rrr map[string]*gql.Ghr) (keys []string) {
 	}
 	sort.Slice(keys, func(i, j int) bool {
 		if rrr[keys[i]].Ghf == nil {
-			logrus.Warnf("rrr[keys[i]].Ghf == nil, i=%v, keys[i]=%v, rrr[keys[i]]=%v", i, keys[i], rrr[keys[i]])
+			cmdr.Logger.Warnf("rrr[keys[i]].Ghf == nil, i=%v, keys[i]=%v, rrr[keys[i]]=%v", i, keys[i], rrr[keys[i]])
 			return false
 		}
 		if rrr[keys[j]].Ghf == nil {
-			logrus.Warnf("rrr[keys[j]].Ghf == nil, j=%v, keys[j]=%v, rrr[keys[j]]=%v", j, keys[j], rrr[keys[j]])
+			cmdr.Logger.Warnf("rrr[keys[j]].Ghf == nil, j=%v, keys[j]=%v, rrr[keys[j]]=%v", j, keys[j], rrr[keys[j]])
 			return true
 		}
 		return rrr[keys[i]].Ghf.Stargazers.TotalCount > rrr[keys[j]].Ghf.Stargazers.TotalCount
@@ -58,13 +57,13 @@ func httpGet(url, filepath string, cacheTime string) (err error) {
 	dur, err = time.ParseDuration(cacheTime)
 	if cmdr.FileExists(filepath) {
 		if fi, err = os.Stat(filepath); err == nil {
-			logrus.Debugf("fi: %v, now: %v, fi+%v: %v", fi.ModTime(), time.Now(), cacheTime, fi.ModTime().Add(dur))
+			cmdr.Logger.Debugf("fi: %v, now: %v, fi+%v: %v", fi.ModTime(), time.Now(), cacheTime, fi.ModTime().Add(dur))
 			if fi.ModTime().Add(dur).Before(time.Now()) {
-				logrus.Infof("cache expired, force http download: %v", url)
+				cmdr.Logger.Infof("cache expired, force http download: %v", url)
 				goto goAhead
 			}
 		}
-		logrus.Infof("skip http download: %v", url)
+		cmdr.Logger.Infof("skip http download: %v", url)
 		return
 	}
 
@@ -87,7 +86,7 @@ goAhead:
 	var written int64
 	written, err = io.Copy(out, resp.Body)
 	if err == nil {
-		logrus.Infof("%v downloaded, %v bytes.", filepath, written)
+		cmdr.Logger.Infof("%v downloaded, %v bytes.", filepath, written)
 	}
 	return
 }
