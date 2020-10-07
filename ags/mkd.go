@@ -10,7 +10,7 @@ import (
 	"io"
 
 	// "github.com/russross/blackfriday"
-	"gopkg.in/russross/blackfriday.v2"
+	"github.com/russross/blackfriday/v2"
 )
 
 func newMarkdownRenderer() blackfriday.Renderer {

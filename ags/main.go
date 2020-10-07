@@ -18,7 +18,7 @@ import (
 	"strings"
 
 	// "github.com/russross/blackfriday"
-	"gopkg.in/russross/blackfriday.v2"
+	"github.com/russross/blackfriday/v2"
 
 	// graphql "github.com/graph-gophers/graphql-go"
 	// "github.com/graph-gophers/graphql-go/relay"
