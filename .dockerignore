@@ -1,0 +1,6 @@
+bin/
+docs/
+output/
+.github/
+cover*.*
+*.log

@@ -170,6 +170,11 @@ go-cyclo:
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) GO111MODULE=$(GO111MODULE) GOPROXY=$(GOPROXY) \
 	gocyclo -top 20 .
 
+## docker: docker build
+docker:
+	@echo "  >  docker build ..."
+	docker build --build-arg CN=1 --build-arg GOPROXY="https://gocenter.io,direct" -t $(APPNAME):latest -t $(APPNAME):$(VERSION) .
+
 
 ## run: build, and test, ...
 run: go-build
