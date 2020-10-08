@@ -119,7 +119,7 @@ work dir: %v
 			}
 
 		} else {
-		RETRY_QL:
+		RetryQl:
 			ql, rrr, cnt = gql.BuildQl(sec, ignoreUsernames, ignoreRepos)
 			if cnt == 0 {
 				continue
@@ -152,7 +152,7 @@ work dir: %v
 						}
 						ignoreUsernames = append(ignoreUsernames, n)
 						writeJsonFile(ignoreUsernamesFilename, ignoreUsernames)
-						goto RETRY_QL
+						goto RetryQl
 					}
 				} else if strings.Index(err.Error(), "Could not resolve to a Repository with the name") >= 0 {
 					if i := strings.Index(err.Error(), "'"); i > 0 {
@@ -162,7 +162,7 @@ work dir: %v
 						}
 						ignoreRepos = append(ignoreRepos, n)
 						writeJsonFile(ignoreReposFilename, ignoreRepos)
-						goto RETRY_QL
+						goto RetryQl
 					}
 				}
 				cmdr.Logger.Errorf("error: %v", err)
@@ -240,19 +240,22 @@ work dir: %v
 		_ = out.Sync()
 
 		loop++
-		if cmdr.GetBoolR("build.one.first-loop") {
-			if loop >= 1 {
-				os.Exit(0)
-			}
-		} else if cmdr.GetBoolR("build.one.2nd-loop") {
-			if loop >= 2 {
-				os.Exit(0)
-			}
-		} else if cmdr.GetBoolR("build.one.5th-loop") {
-			if loop >= 5 {
-				os.Exit(0)
-			}
+		if stopLoops := cmdr.GetIntR("build.one.loops"); loop >= stopLoops {
+			os.Exit(0)
 		}
+		//if cmdr.GetBoolR("build.one.first-loop") {
+		//	if loop >= 1 {
+		//		os.Exit(0)
+		//	}
+		//} else if cmdr.GetBoolR("build.one.2nd-loop") {
+		//	if loop >= 2 {
+		//		os.Exit(0)
+		//	}
+		//} else if cmdr.GetBoolR("build.one.5th-loop") {
+		//	if loop >= 5 {
+		//		os.Exit(0)
+		//	}
+		//}
 
 	}
 
