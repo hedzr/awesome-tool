@@ -92,8 +92,8 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Docker Build
-        #if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, '/master')
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, '/master')
+        #if: startsWith(github.ref, 'refs/tags/v')
         env:
           HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -145,7 +145,7 @@ jobs:
               for GOARCH in amd64; do
                 suf=; if [[ $GOOS == "windows" ]]; then suf=".exe"; fi
                 go build -v -ldflags "$LDFLAGS" -o ./bin/$app$suf ./$dir/cli
-                gzip ./bin/$app$suf
+                gzip -f ./bin/$app$suf
               done
             done
           done
