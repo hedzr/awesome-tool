@@ -240,9 +240,11 @@ work dir: %v
 		_ = out.Sync()
 
 		loop++
-		if stopLoops := cmdr.GetIntR("build.one.loops"); loop >= stopLoops {
-			os.Exit(0)
+		if stopLoops := cmdr.GetIntR("build.one.loops"); stopLoops <= 0 || loop < stopLoops {
+			continue
 		}
+		os.Exit(0)
+
 		//if cmdr.GetBoolR("build.one.first-loop") {
 		//	if loop >= 1 {
 		//		os.Exit(0)
