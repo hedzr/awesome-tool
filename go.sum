@@ -95,11 +95,10 @@ github.com/gorilla/sessions v1.1.3/go.mod h1:8KCfur6+4Mqcc6S0FEfKuN15Vl5MgXW92AE
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hashicorp/go-version v1.2.1/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
-github.com/hedzr/cmdr v1.7.27/go.mod h1:aKfRBLS+O1B1lUtFZudbFkASGSrMOs5Tff49DVXdHaw=
-github.com/hedzr/cmdr v1.7.28 h1:gDzLzgs7bCP1uZaucvzG8UKG44FU9M6Am683SFsoVsY=
-github.com/hedzr/cmdr v1.7.28/go.mod h1:aKfRBLS+O1B1lUtFZudbFkASGSrMOs5Tff49DVXdHaw=
-github.com/hedzr/cmdr-addons v1.7.28 h1:MNFn/S6aDRA27e+rRFVeBbr3RmFPoWvSsErFvRXjCNM=
-github.com/hedzr/cmdr-addons v1.7.28/go.mod h1:4WNChlmfbnbUR8/PWxFdpYBM3e5kbre3oLjuC+XnSv0=
+github.com/hedzr/cmdr v1.7.30 h1:bnhPX+giPDIyZ0cB+QHf3WcEj44uZEI58uLDgewO6So=
+github.com/hedzr/cmdr v1.7.30/go.mod h1:DlSPuUDC49wAW/IQbdjDqpEjhQshHWN4wA78PZ22KfU=
+github.com/hedzr/cmdr-addons v1.7.30 h1:r5/s94tuNB5s2qF22LOauQYw+qjDiyUb5Yj/oyJLTws=
+github.com/hedzr/cmdr-addons v1.7.30/go.mod h1:L1BA38iWgK1XBe1U2KQGHSTRc+AMiLObGkFjADRldts=
 github.com/hedzr/cmdr-base v0.1.3 h1:pMhVLP+Uxdhuf6BeasAC2OivMXJ3vxJHvFJHPQscQPU=
 github.com/hedzr/cmdr-base v0.1.3/go.mod h1:c3vMkHa5PME2P2W8lE3T9+JX12tq9tmCUt6lXbmt5kI=
 github.com/hedzr/log v0.2.3 h1:7by2JjO+hX4yzxQyUzwvpyZa5wpgN7NbxJ27RDFXWJU=
