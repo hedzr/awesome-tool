@@ -37,7 +37,7 @@ jobs:
       - name: Test
         run: |
           go mod download
-          go build -v -o main ./examples/short
+          go build -v -o main ./cli
           rm main
           go test ./...
 
