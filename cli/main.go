@@ -8,6 +8,7 @@ import (
 	"github.com/hedzr/awesome-tool"
 	"github.com/hedzr/awesome-tool/ags"
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/cmdr-addons/pkg/plugins/trace"
 	"github.com/hedzr/logex/build"
 )
 
@@ -28,7 +29,8 @@ func Entry() {
 		// daemon.WithDaemon(svr.NewDaemon(), nil, nil, nil),
 		// cmdr.WithHelpTabStop(40),
 		//cmdr.WithLogex(logrus.DebugLevel),
-		cmdr.WithLogx(build.New(build.NewLoggerConfigWith(true, "logrus", "debug"))),
+		cmdr.WithLogx(build.New(cmdr.NewLoggerConfigWith(true, "logrus", "debug"))),
+		trace.WithTraceEnable(true),
 		cmdr.WithWatchMainConfigFileToo(true),
 	); err != nil {
 		cmdr.Logger.Errorf("Error: %v", err)
@@ -65,7 +67,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	// attachConsulConnectFlags(buildCmd)
 
 	boCmd := buildCmd.NewSubCommand().
-		Titles("one", "1").
+		Titles("one", "1", "single").
 		Description("Build a repos' stars page for an awesome-list", ``).
 		Examples(examplesBuildOne).
 		Action(buildOne)
@@ -82,18 +84,28 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Description("main name", ``).
 		DefaultValue("", "NAME")
 
-	boCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("first-loop", "1", "1st").
-		Description("stop at end of first loop", ``).
-		DefaultValue(false, "")
-	boCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("2nd-loop", "2", "2nd").
-		Description("stop at end of second loop", ``).
-		DefaultValue(false, "")
-	boCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("5th-loop", "5", "5th").
-		Description("stop at end of fifth loop", ``).
-		DefaultValue(false, "")
+	cmdr.NewInt(-1).
+		HeadLike(true, -1, 65535).
+		Titles("loops", "l").
+		Description("the looping times before stop").
+		Group("Debug").
+		AttachTo(boCmd)
+
+	//boCmd.NewFlag(cmdr.OptFlagTypeBool).
+	//	Titles("first-loop", "1", "1st").
+	//	Description("stop at end of first loop", ``).
+	//	DefaultValue(false, "").
+	//	ToggleGroup("Debug")
+	//boCmd.NewFlag(cmdr.OptFlagTypeBool).
+	//	Titles("2nd-loop", "2", "2nd").
+	//	Description("stop at end of second loop", ``).
+	//	DefaultValue(false, "").
+	//	ToggleGroup("Debug")
+	//boCmd.NewFlag(cmdr.OptFlagTypeBool).
+	//	Titles("5th-loop", "5", "5th").
+	//	Description("stop at end of fifth loop", ``).
+	//	DefaultValue(false, "").
+	//	ToggleGroup("Debug")
 
 	return
 }
