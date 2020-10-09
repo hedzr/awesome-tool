@@ -12,6 +12,21 @@
 
 
 
+## Installation
+
+### Release
+
+Download the latest release at GitHub Releases Page, please.
+
+### Homebrew (macOS)
+
+```bash
+brew install hedzr/brew/awesome-tool
+
+# Or:
+brew tap hedzr/brew
+brew install awesome-tool
+```
 
 ## Usage
 
