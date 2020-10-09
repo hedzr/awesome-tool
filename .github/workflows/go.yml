@@ -148,7 +148,9 @@ jobs:
                   go build -v -a -installsuffix cgo -ldflags "$LDFLAGS" -o ./bin/$app$suf ./$dir/cli
                 chmod +x ./bin/$app$suf
                 if [[ $GOOS == "windows" ]]; then
-                  zip -u ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.zip ./bin/$app$suf -C ci etc/$app && rm ./bin/$app$suf
+                  zip -u ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.zip ./bin/$app$suf
+                  cd ci; zip -u -r ../bin/$app-v$VERSION-$GOOS-$GOARCH$suf.zip etc/*; cd ..
+                  rm ./bin/$app$suf
                 else
                   tar -czf ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.tgz ./bin/$app$suf -C ci etc/$app && rm ./bin/$app$suf
                 fi
