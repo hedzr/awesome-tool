@@ -159,6 +159,7 @@ jobs:
           done
           done
           shasum -a 256 -b ./bin/* > bin/sha256sum.txt
+          ls -la bin/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master
