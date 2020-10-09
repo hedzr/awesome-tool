@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/hedzr/awesome-tool"
 	"github.com/hedzr/awesome-tool/ags"
 	"github.com/hedzr/cmdr"
@@ -40,15 +41,6 @@ func Entry() {
 
 func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
-	// To disable internal commands and flags, uncomment the following codes
-	// cmdr.EnableVersionCommands = false
-	// cmdr.EnableVerboseCommands = false
-	// cmdr.EnableCmdrCommands = false
-	// cmdr.EnableHelpCommands = false
-	// cmdr.EnableGenerateCommands = false
-
-	// daemon.Enable(server.NewDaemon(), modifier, onAppStart, onAppExit)
-
 	// root
 
 	root := cmdr.Root(awesome_tool.AppName, awesome_tool.Version).
@@ -57,6 +49,16 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Description(desc, longDesc).
 		Examples(examples)
 	rootCmd = root.RootCommand()
+
+	// info
+
+	root.NewSubCommand().
+		Titles("info", "i").
+		Description("debug information...", ``).
+		Action(func(cmd *cmdr.Command, args []string) (err error) {
+			fmt.Printf("'nothing' in config file is: %q\n", cmdr.GetStringR("nothing"))
+			return
+		})
 
 	// build
 
