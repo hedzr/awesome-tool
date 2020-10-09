@@ -145,11 +145,14 @@ jobs:
               for GOARCH in amd64; do
                 suf=; if [[ $GOOS == "windows" ]]; then suf=".exe"; fi
                 go build -v -ldflags "$LDFLAGS" -o ./bin/$app$suf ./$dir/cli
-                gzip -f ./bin/$app$suf
+                chmod +x ./bin/$app-$GOOS-$GOARCH.$suf
+                gzip -f ./bin/$app-$GOOS-$GOARCH$suf
+                chmod +x ./bin/$app-$GOOS-$GOARCH$suf.gz
               done
             done
           done
           done
+          shasum -a 256 -b ./bin/*.gz > sha256sum.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master
