@@ -144,12 +144,13 @@ jobs:
             for GOOS in windows linux darwin; do
               for GOARCH in amd64; do
                 suf=; if [[ $GOOS == "windows" ]]; then suf=".exe"; fi
-                go build -v -ldflags "$LDFLAGS" -o ./bin/$app$suf ./$dir/cli
+                CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH \
+                  go build -v -a -installsuffix cgo -ldflags "$LDFLAGS" -o ./bin/$app$suf ./$dir/cli
                 chmod +x ./bin/$app$suf
                 if [[ $GOOS == "windows" ]]; then
-                  zip -u ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.zip ./bin/$app$suf -c ci etc/$app && rm ./bin/$app$suf
+                  zip -u ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.zip ./bin/$app$suf -C ci etc/$app && rm ./bin/$app$suf
                 else
-                  tar -czf ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.tgz ./bin/$app$suf -c ci etc/$app && rm ./bin/$app$suf
+                  tar -czf ./bin/$app-v$VERSION-$GOOS-$GOARCH$suf.tgz ./bin/$app$suf -C ci etc/$app && rm ./bin/$app$suf
                 fi
               done
             done
