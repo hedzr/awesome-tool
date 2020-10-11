@@ -3,6 +3,8 @@
 ![Go](https://github.com/hedzr/awesome-tool/workflows/Go/badge.svg)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/hedzr/awesome-tool.svg?label=release)](https://github.com/hedzr/awesome-tool/releases)
 [![](https://img.shields.io/badge/go-dev-green)](https://pkg.go.dev/github.com/hedzr/awesome-tool)
+[![Docker Pulls](https://img.shields.io/docker/pulls/hedzr/awesome-tool.svg)]()
+
 
 <!--
 [![Build Status](https://travis-ci.com/hedzr/awesome-tool.svg?branch=master)](https://travis-ci.com/hedzr/awesome-tool)
@@ -76,7 +78,7 @@ The access token is used to request [Github API v3](https://developer.github.com
 We can't query how many contributors via GitHub API v4, currently.
 
 For saving your querying bandwidth, we ignore this count.
- 
+
 
 ## LICENSE
 
