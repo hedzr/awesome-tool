@@ -3,7 +3,7 @@
 ![Go](https://github.com/hedzr/awesome-tool/workflows/Go/badge.svg)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/hedzr/awesome-tool.svg?label=release)](https://github.com/hedzr/awesome-tool/releases)
 [![](https://img.shields.io/badge/go-dev-green)](https://pkg.go.dev/github.com/hedzr/awesome-tool)
-[![Docker Pulls](https://img.shields.io/docker/pulls/hedzr/awesome-tool.svg)]()
+[![Docker Pulls](https://img.shields.io/docker/pulls/hedzr/awesome-tool.svg)](https://hub.docker.com/r/hedzr/awesome-tool)
 
 
 <!--
