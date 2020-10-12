@@ -10,9 +10,9 @@ install:
   - go mod download
 
 script:
-  - touch .env
+  - touch .env .env.local
   - make build-ci
-  - go test -coverprofile=coverage.txt -covermode=atomic cli/main.go
+  # - go test -coverprofile=coverage.txt -covermode=atomic cli/main.go
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
