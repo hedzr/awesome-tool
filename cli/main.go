@@ -57,6 +57,12 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Description("debug information...", ``).
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			fmt.Printf("'nothing' in config file is: %q\n", cmdr.GetStringR("nothing"))
+			fmt.Printf("'z-flag' in config file is: %v\n", cmdr.GetBoolR("z-flag"))
+			fmt.Printf("'z-mergable' in config file is: %v\n", cmdr.GetStringSliceR("z-mergeable"))
+			fmt.Printf("'z-string' in config file is: %q\n", cmdr.GetStringR("z-string"))
+			s1 := cmdr.GetStringSliceR("z-mergeable")
+			s1 = append(s1, "e")
+			cmdr.Set("z-mergeable", s1)
 			return
 		})
 
