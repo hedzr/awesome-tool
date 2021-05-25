@@ -8,9 +8,9 @@ const (
 	// AppName const
 	AppName = "awesome-tool" // main app-name
 	// Version const
-	Version = "1.1.10" // version name
+	Version = "1.1.11" // version name
 	// VersionInt const
-	VersionInt = 0x01010A // using as
+	VersionInt = 0x01010b // using as
 )
 
 // func GetApiPrefix() string {
