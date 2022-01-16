@@ -48,7 +48,8 @@ PID         = $(or $(PID_CUSTOM),/tmp/.$(PROJECTNAME).pid)
 MAKEFLAGS += --silent
 
 
-goarch=amd64
+goarch=$(shell go env GOARCH)
+goos=$(shell go env GOOS)
 W_PKG=github.com/hedzr/cmdr/conf
 LDFLAGS := -s -w \
 	-X '$(W_PKG).Buildstamp=$(BUILDTIME)' \
@@ -56,6 +57,9 @@ LDFLAGS := -s -w \
 	-X '$(W_PKG).GoVersion=$(GOVERSION)' \
 	-X '$(W_PKG).Version=$(VERSION)'
 # -X '$(W_PKG).AppName=$(APPNAME)'
+GOSYS := GOARCH="$(goarch)" GOOS="$(os)" \
+	GOPATH="$(GOPATH)" GOBIN="$(BIN)" \
+	GO111MODULE=on GOPROXY=$(GOPROXY) go
 GO := GOARCH="$(goarch)" GOOS="$(os)" \
 	GOPATH="$(GOPATH)" GOBIN="$(GOBIN)" \
 	GO111MODULE=on GOPROXY=$(GOPROXY) go
@@ -140,6 +144,9 @@ build: directories compile
 build-win:
 	@-$(MAKE) -s go-build-task os=windows goarchset=amd64
 
+## build-windows: build to riscv64 executable, for LAN deploy manually.
+build-windows: build-win
+
 ## build-linux: build to linux executable, for LAN deploy manually.
 build-linux:
 	@-$(MAKE) -s go-build-task os=linux goarchset=amd64
@@ -175,10 +182,19 @@ build-ci:
 	$(foreach os, linux darwin windows, \
 	  @-$(MAKE) -s go-build-task os=$(os) goarchset="386 amd64" \
 	)
+	@-$(MAKE) -s go-build-task os="darwin" goarchset="arm64"
 	@echo "  < All Done."
 	@ls -la $(LS_OPT) $(GOBIN)/*
 
-go-build-task: directories
+## build-darwin: build to riscv64 executable, for LAN deploy manually.
+build-darwin:
+	@-$(MAKE) -s go-build-task os=darwin goarchset=amd64
+
+## build-m1: run build-ci task. just for CI tools
+build-m1:
+	@-$(MAKE) -s go-build-task os="darwin" goarchset="arm64"
+
+go-build-task-another-one: directories go-generate
 	@echo "  >  Building $(os)/$(goarchset) binary..."
 	@#echo "  >  LDFLAGS = $(LDFLAGS)"
 	# unsupported GOOS/GOARCH pair nacl/386 ??
@@ -191,8 +207,9 @@ go-build-task: directories
 		done)) \
 	  $(foreach goarch, $(goarchset), \
 	    echo "     >> Building (-trimpath) $(GOBIN)/$(ANAME)_$(os)_$(goarch)...$(os)" >/dev/null; \
-	    $(GO) build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(ANAME)_$(os)_$(goarch) $(GOBASE)/$(MAIN_BUILD_PKG)/$(an)/$(MAIN_ENTRY_FILE); \
-	    chmod +x $(GOBIN)/$(ANAME)_$(os)_$(goarch)*; \
+	    pushd "$(MAIN_BUILD_PKG)/$(an)"; \
+        $(GO) build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(ANAME)_$(os)_$(goarch) $(GOBASE)/$(MAIN_BUILD_PKG)/$(an)/$(MAIN_ENTRY_FILE); \
+	    popd; chmod +x $(GOBIN)/$(ANAME)_$(os)_$(goarch)*; \
 	    ls -la $(LS_OPT) $(GOBIN)/$(ANAME)_$(os)_$(goarch)*; \
 	) \
 	)
@@ -208,6 +225,57 @@ go-build-task: directories
 	#	)
 	#@ls -la $(LS_OPT) $(GOBIN)/*linux*
 
+
+go-build-task: directories tools go-generate
+	@echo "-----"
+	@echo "  >  Building $(os)/$(goarchset) binary..."
+	# unsupported GOOS/GOARCH pair nacl/386 ??
+	$(foreach an, $(MAIN_APPS), \
+	  $(foreach san, $(SUB_APPS), \
+		  $(eval DOCNAME = "./$(an)/$(san)/doc.go") \
+		  $(eval MAINGONAME = "./$(an)/$(san)/cli/$(san)/") \
+		  if [ -f "$(DOCNAME)" ]; then \
+	        $(foreach goos, $(os), \
+	        $(foreach goarch, $(goarchset), \
+			echo "     > DOCNAME = $(DOCNAME), MAINGONAME = $(MAINGONAME)"; \
+			echo "     > APP NAMEs = appname:$(APPNAME)|projname:$(PROJECTNAME)|an:$(an)"; \
+			$(MAKE) -s go-build-child os=$(goos) goarch=$(goarch) SUFFIX="_$(goos)-$(goarch)" DOCNAME=$(DOCNAME) MAINGONAME=$(MAINGONAME) an=$(an) san=$(san); \
+			) ) \
+		  fi; \
+	  ) \
+	)
+	#	$(foreach an, $(MAIN_APPS), \
+	#	  $(eval ANAME := $(shell if [ "$(an)" == "cli" ]; then echo $(APPNAME); else echo $(an); fi; )) \
+	#	  echo "  >  APP NAMEs = appname:$(APPNAME)|projname:$(PROJECTNAME)|an:$(an)|ANAME:$(ANAME)"; \
+	#	  $(foreach goarch, $(goarchset), \
+	#	    echo "     >> Building (-trimpath) $(GOBIN)/$(ANAME)_$(os)_$(goarch)...$(os)" >/dev/null; \
+	#	    $(GO) build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(ANAME)_$(os)_$(goarch) $(GOBASE)/$(MAIN_BUILD_PKG)/$(an); \
+	#	    chmod +x $(GOBIN)/$(ANAME)_$(os)_$(goarch)*; \
+	#	    ls -la $(LS_OPT) $(GOBIN)/$(ANAME)_$(os)_$(goarch)*; \
+	#	) \
+	#	)
+	#@ls -la $(LS_OPT) $(GOBIN)/*linux*
+
+go-build-child:
+	@echo "     >  go-build-child: suffix = $(SUFFIX), DOCNAME = $(DOCNAME), MAINGONAME = $(MAINGONAME), AN = $(an), san = $(san)."
+	$(eval APPNAME = $(patsubst "%",%,$(shell grep -E "AppName[ \t]+=[ \t]+" "$(DOCNAME)" 2>/dev/null|grep -Eo "\\\".+\\\"")))
+	$(eval VERSION = $(shell grep -E "Version[ \t]+=[ \t]+" "$(DOCNAME)" 2>/dev/null|grep -Eo "[0-9.]+"))
+	@echo "        > detecting SUB_APPS: $(APPNAME) v$(VERSION)"
+	$(eval ANAME = $(shell for an1 in $(MAIN_APPS); do \
+		if [[ "$(an)" == $$an1 ]]; then \
+		  if [[ $$an1 == cli ]]; then echo $(APPNAME); else echo $$an1; fi; \
+		fi; \
+	done))
+	$(eval LDFLAGS = -s -w \
+		-X '$(W_PKG).Buildstamp=$(BUILDTIME)' \
+		-X '$(W_PKG).Githash=$(GIT_REVISION)' \
+		-X '$(W_PKG).GoVersion=$(GOVERSION)' \
+		-X '$(W_PKG).Version=$(VERSION)' )
+	echo "     >  >  Building $(MAINGONAME) -> $(ANAME)$(SUFFIX) v$(VERSION) ..."
+	echo "           +race. -trimpath. APPNAME = $(APPNAME), LDFLAGS = $(LDFLAGS)"
+	$(GO) build -v -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(ANAME)$(SUFFIX) $(MAINGONAME)
+	ls -la $(LS_OPT) $(GOBIN)/$(ANAME)$(SUFFIX)
+	@echo "  > go-build-child: END."
 
 
 
@@ -232,7 +300,7 @@ clean:
 
 # go-compile: go-clean go-generate go-build
 
-ooo:
+ooo_test:
 	$(eval ANAME := $(shell for an in $(MAIN_APPS); do \
 		if [[ $$an == cli ]]; then A=$(APPNAME); echo $(APPNAME); \
 		else A=$$an; echo $$an; \
@@ -240,14 +308,17 @@ ooo:
 	done))
 	@echo "ANAME = $(ANAME), $$ANAME, $$A"
 
-ox: go-clean go-generate
+oop_test: go-clean go-generate
 	$(MAKE) -s go-build
 
 ## run: go run xxx
 run:
-	@$(GO) run -ldflags "$(LDFLAGS)" $(GOBASE)/cli/main.go 
+	@$(GO) run -ldflags "$(LDFLAGS)" $(GOBASE)/cli/main.go
 
 go-build:
+	@-$(MAKE) -s go-build-task os="$(goos)" goarchset="$(goarch)"
+
+go-build-1:
 	@echo "  >  Building apps: $(MAIN_APPS)..."
 	$(foreach an, $(MAIN_APPS), \
 		$(eval ANAME := $(shell for an1 in $(MAIN_APPS); do \
@@ -257,8 +328,9 @@ go-build:
 		done)) \
 	  echo "  >  >  Building $(MAIN_BUILD_PKG)/$(an) -> $(ANAME) ..."; \
 	  echo "        +race. -trimpath. APPNAME = $(APPNAME), LDFLAGS = $(LDFLAGS)"; \
+	  pushd "$(MAIN_BUILD_PKG)/$(an)"; \
 	  $(GO) build -v -race -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(ANAME) $(GOBASE)/$(MAIN_BUILD_PKG)/$(an)/$(MAIN_ENTRY_FILE); \
-	  ls -la $(LS_OPT) $(GOBIN)/$(ANAME); \
+	  popd; ls -la $(LS_OPT) $(GOBIN)/$(ANAME); \
 	)
 	ls -la $(LS_OPT) $(GOBIN)/
 	if [[ -d ./plugin/demo ]]; then \
@@ -288,6 +360,12 @@ go-clean:
 	@$(GO) clean
 
 
+
+$(BIN)/swag: | $(GOBASE)   # # # ❶
+	@echo "  >  installing swaggo ..."
+	@$(GOSYS) install -v github.com/swaggo/swag/cmd/swag
+	#@$(GO) get -u github.com/swaggo/swag/cmd/swag
+	@ls -la $(BIN)/
 
 $(BIN)/golint: | $(GOBASE)   # # # ❶
 	@echo "  >  installing golint ..."
@@ -331,7 +409,7 @@ godoc1: # | $(GOBASE) $(BIN)/godoc
 	@echo "  >  PWD = $(shell pwd)"
 	@echo "  >  started godoc server at :6060: http://localhost:6060/pkg/github.com/hedzr/$(PROJECTNAME1) ..."
 	#@echo "  $  GOPATH=$(GOPATH) godoc -http=:6060 -index -notes '(BUG|TODO|DONE|Deprecated)' -play -timestamps"
-	godoc -v -index -http=:6060 -notes '(BUG|TODO|DONE|Deprecated)' -play -timestamps # -goroot $(GOPATH) 
+	godoc -v -index -http=:6060 -notes '(BUG|TODO|DONE|Deprecated)' -play -timestamps # -goroot $(GOPATH)
 	# gopkg.in/hedzr/errors.v2.New
 	# -goroot $(GOPATH) -index
 	# https://medium.com/@elliotchance/godoc-tips-tricks-cda6571549b
@@ -411,12 +489,38 @@ linux-test:
 
 ## docker: docker build
 docker:
-	@if [ -n "$(DOCKER_APP_NAME)" ]; then \
-	  echo "  >  docker build $(DOCKER_APP_NAME):$(VERSION)..."; \
-	  docker build --build-arg CN=1 --build-arg GOPROXY="https://gocenter.io,direct" -t $(DOCKER_APP_NAME):latest -t $(DOCKER_APP_NAME):$(VERSION) . ; \
+	@if [ "$(DOCKER_APP_NAMES)" != "" ]; then \
+	  $(foreach an, $(MAIN_APPS), \
+	  $(foreach san, $(DOCKER_APP_NAMES), \
+	    $(eval DOCNAME = "$(an)/$(san)/doc.go") \
+	    $(eval APPNAME = $(patsubst "%",%,$(shell grep -E "AppName[ \t]+=[ \t]+" "$(DOCNAME)" 2>/dev/null|grep -Eo "\\\".+\\\""))) \
+	    $(eval VERSION = $(shell grep -E "Version[ \t]+=[ \t]+" "$(DOCNAME)" 2>/dev/null|grep -Eo "[0-9.]+")) \
+	    $(eval DOCKERFILE = "$(san).external.Dockerfile") \
+	    echo "  >  docker build $(san):$(VERSION) ($(DOCKERFILE))..."; \
+	    docker build --progress=plain \
+	       --build-arg CN=1 \
+	       --build-arg CI=1 \
+           --build-arg APK_MIRROR="mirrors.ustc.edu.cn" \
+	       --build-arg BUILDTIME="$(BUILDTIME)" \
+	       --build-arg GIT_REVISION="$(GIT_REVISION)" \
+	       --build-arg GOVERSION="$(GOVERSION)" \
+	       --build-arg W_PKG="$(W_PKG)" \
+	       --build-arg GOPROXY="https://goproxy.cn,direct" \
+           --build-arg USER_ID=$(id -u) \
+           --build-arg GROUP_ID=$(id -g) \
+	       --build-arg APPNAME="$(san)" \
+	       --build-arg VERSION="$(VERSION)" \
+	       --build-arg PORT="10000" \
+	       -t "$(DOCKER_ORG_NAME)/$(san):latest" -t "$(DOCKER_ORG_NAME)/$(san):v$(VERSION)" -f $(DOCKERFILE) . ; \
+	  ) \
+	  ) \
 	else \
-	  echo "  >  docker build not available since DOCKER_APP_NAME is empty"; \
+	  echo "  >  docker build not available since DOCKER_APP_NAMES is empty"; \
 	fi
+
+#v#  mirrors.ustc.edu.cn
+#v#  mirrors.tuna.tsinghua.edu.cn
+#v#  dl-cdn.alpinelinux.org
 
 
 ## rshz: rsync to my TP470P
@@ -434,6 +538,8 @@ MKDIR_P = mkdir -p
 
 directories: $(GOBIN)
 
+tools: $(BIN) $(BIN)/swag
+
 $(GOBIN):
 	$(MKDIR_P) $(GOBIN)
 
@@ -450,13 +556,13 @@ print-%:
 	@echo $* = $($*)
 
 info:
-	@echo "     GO_VERSION: $(GOVERSION)"
-	@echo "        GOPROXY: $(GOPROXY)"
-	@echo "         GOROOT: $(GOROOT) | GOPATH: $(GOPATH)"
-	#@echo "    GO111MODULE: $(GO111MODULE)"
+	@echo "     GO VERSION: $(GOVERSION)"
+	@echo "       GO PROXY: $(GOPROXY)"
+	@echo "        GO ROOT: $(GOROOT) | GOPATH: $(GOPATH)"
+	@echo "         GO BIN: $(GOBIN)"
 	@echo
 	@echo "         GOBASE: $(GOBASE)"
-	@echo "          GOBIN: $(GOBIN)"
+	@echo "          GOBIN: $(BIN)"
 	@echo "    PROJECTNAME: $(PROJECTNAME)"
 	@echo "        APPNAME: $(APPNAME)"
 	@echo "        VERSION: $(VERSION)"
