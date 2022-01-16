@@ -8,7 +8,7 @@ const (
 	// AppName const
 	AppName = "awesome-tool" // main app-name
 	// Version const
-	Version = "1.1.11" // version name
+	Version = "1.1.13" // version name
 	// VersionInt const
 	VersionInt = 0x01010b // using as
 )
