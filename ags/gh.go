@@ -6,27 +6,29 @@ package ags
 
 import (
 	"encoding/json"
-	"github.com/hedzr/awesome-tool/ags/gql"
-	"github.com/hedzr/cmdr"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"sort"
 	"time"
+
+	"github.com/hedzr/awesome-tool/ags/gql"
+	"github.com/hedzr/cmdr"
+	"github.com/hedzr/log/dir"
 )
 
 func writeJsonFile(filename string, obj interface{}) {
 	b, err := json.Marshal(obj)
 	if err == nil {
-		err = ioutil.WriteFile(filename, b, 0644)
+		_ = ioutil.WriteFile(filename, b, 0644)
 	}
 }
 
 func readJsonFile(filename string, obj interface{}) {
 	b, err := ioutil.ReadFile(filename)
 	if err == nil {
-		err = json.Unmarshal(b, obj)
+		_ = json.Unmarshal(b, obj)
 	}
 }
 
@@ -55,7 +57,7 @@ func httpGet(url, filepath string, cacheTime string) (err error) {
 		fi  os.FileInfo
 	)
 	dur, err = time.ParseDuration(cacheTime)
-	if cmdr.FileExists(filepath) {
+	if dir.FileExists(filepath) {
 		if fi, err = os.Stat(filepath); err == nil {
 			cmdr.Logger.Debugf("fi: %v, now: %v, fi+%v: %v", fi.ModTime(), time.Now(), cacheTime, fi.ModTime().Add(dur))
 			if fi.ModTime().Add(dur).Before(time.Now()) {

@@ -8,14 +8,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hedzr/awesome-tool/ags/gh"
-	"github.com/hedzr/awesome-tool/ags/gql"
-	"github.com/hedzr/cmdr"
-	"gopkg.in/hedzr/errors.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/hedzr/awesome-tool/ags/gh"
+	"github.com/hedzr/awesome-tool/ags/gql"
+	"github.com/hedzr/cmdr"
+	"github.com/hedzr/log/dir"
+	"gopkg.in/hedzr/errors.v3"
 
 	// "github.com/russross/blackfriday"
 	"github.com/russross/blackfriday/v2"
@@ -59,7 +61,7 @@ func Main() (err error) {
 		loop            = 0
 	)
 
-	if err = cmdr.EnsureDir(workDir); err != nil {
+	if err = dir.EnsureDir(workDir); err != nil {
 		return
 	}
 
@@ -101,9 +103,9 @@ work dir: %v
 
 		rrr, cnt, ql, respData := make(map[string]*gql.Ghr), 0, "", make(gql.GhRes)
 		jsonFile := fmt.Sprintf("%v/pre/result.%v.json", workDir, sec.Header)
-		_ = cmdr.EnsureDir(path.Dir(jsonFile))
+		_ = dir.EnsureDir(path.Dir(jsonFile))
 
-		if cmdr.FileExists(jsonFile) {
+		if dir.FileExists(jsonFile) {
 			cmdr.Logger.Debugf("  ..loading existed json result from %v", jsonFile)
 			var b []byte
 			b, err = ioutil.ReadFile(jsonFile)
@@ -134,7 +136,7 @@ work dir: %v
 			// cmdr.Logger.Fatal(http.ListenAndServe(":8080", nil))
 
 			gqlFile := fmt.Sprintf("%v/gql/%v", workDir, "query.graphql")
-			_ = cmdr.EnsureDir(path.Dir(gqlFile))
+			_ = dir.EnsureDir(path.Dir(gqlFile))
 			_ = ioutil.WriteFile(gqlFile, []byte(ql), 0644)
 
 			client := graphql.NewClient(gh.ApiEntryV4)
@@ -200,7 +202,7 @@ work dir: %v
 
 			xv := new(gql.GhFrag)
 			*xv = v
-			rrr[k] = &gql.Ghr{owner, repo, "", index, xv}
+			rrr[k] = &gql.Ghr{Owner: owner, Repo: repo, RepoUrl: "", Index: index, Ghf: xv}
 		}
 
 		// sort rrr by stars

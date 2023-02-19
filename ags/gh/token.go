@@ -10,10 +10,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/hedzr/cmdr"
-	"github.com/machinebox/graphql"
-	"golang.org/x/crypto/ssh/terminal"
-	"gopkg.in/hedzr/errors.v2"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -21,6 +17,11 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/hedzr/cmdr"
+	"github.com/machinebox/graphql"
+	"golang.org/x/crypto/ssh/terminal"
+	"gopkg.in/hedzr/errors.v3"
 )
 
 const (
@@ -74,7 +75,7 @@ func RequestToken() (token string) {
 }`, ClientSecret, fingerprint)
 
 		var ok bool
-		var gr = make(map[string]interface{})
+		var gr map[string]interface{}
 		gr = httpReadJson("PUT", url, body)
 		cmdr.Logger.Debugf(`token: %v (hashed: %v), updated at: %v`, gr["token"], gr["hashed_token"], gr["updated_at"])
 		if token, ok = gr["token"].(string); ok {
@@ -170,11 +171,11 @@ func httpReadJson(method, url, body string) (r map[string]interface{}) {
 
 			var buf bytes.Buffer
 			if _, err := io.Copy(&buf, resp.Body); err != nil {
-				cmdr.Logger.Fatalf("error: %v", errors.New("reading body").Attach(err))
+				cmdr.Logger.Fatalf("error: %v", errors.New("reading body").WithErrors(err))
 			}
 			cmdr.Logger.Debugf("<< %s", buf.String())
 			if err := json.NewDecoder(&buf).Decode(&r); err != nil {
-				cmdr.Logger.Fatalf("error: %v", errors.New("decoding response").Attach(err))
+				cmdr.Logger.Fatalf("error: %v", errors.New("decoding response").WithErrors(err))
 			}
 		}
 	}

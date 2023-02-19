@@ -6,10 +6,11 @@ package gql_test
 
 import (
 	"encoding/json"
-	"github.com/hedzr/awesome-tool/ags/gql"
-	"github.com/hedzr/logex"
 	"io/ioutil"
 	"testing"
+
+	"github.com/hedzr/awesome-tool/ags/gql"
+	"github.com/hedzr/logex"
 )
 
 func TestGhResultJson(t *testing.T) {

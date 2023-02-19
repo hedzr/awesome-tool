@@ -6,11 +6,12 @@ package gql
 
 import (
 	"fmt"
-	"github.com/hedzr/awesome-tool/ags/gh"
 	"regexp"
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/hedzr/awesome-tool/ags/gh"
 )
 
 type (
