@@ -6,10 +6,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/hedzr/awesome-tool"
+
+	awesome_tool "github.com/hedzr/awesome-tool"
 	"github.com/hedzr/awesome-tool/ags"
 	"github.com/hedzr/cmdr"
-	"github.com/hedzr/cmdr-addons/pkg/plugins/trace"
 	"github.com/hedzr/logex/build"
 )
 
@@ -31,7 +31,22 @@ func Entry() {
 		// cmdr.WithHelpTabStop(40),
 		//cmdr.WithLogex(logrus.DebugLevel),
 		cmdr.WithLogx(build.New(cmdr.NewLoggerConfigWith(true, "logrus", "debug"))),
-		trace.WithTraceEnable(true),
+
+		// trace.WithTraceEnable(true),
+		cmdr.WithXrefBuildingHooks(func(root *cmdr.RootCommand, args []string) {
+			cmdr.NewBool(false).
+				Titles("trace", "tr").
+				Description("enable trace mode for tcp/mqtt send/recv data dump", "").
+				// Action(func(cmd *cmdr.Command, args []string) (err error) {
+				// 	println("trace mode on")
+				// 	cmdr.SetTraceMode(true)
+				// 	return
+				// }).
+				Group(cmdr.SysMgmtGroup).
+				EnvKeys("TRACE").
+				AttachToRoot(root)
+		}, nil),
+
 		cmdr.WithWatchMainConfigFileToo(true),
 	); err != nil {
 		cmdr.Logger.Errorf("Error: %v", err)
@@ -52,7 +67,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	// info
 
-	root.NewSubCommand().
+	cmdr.NewSubCmd().
 		Titles("info", "i").
 		Description("debug information...", ``).
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
@@ -64,33 +79,36 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 			s1 = append(s1, "e")
 			cmdr.Set("z-mergeable", s1)
 			return
-		})
+		}).
+		AttachTo(root)
 
 	// build
 
-	buildCmd := root.NewSubCommand().
+	buildCmd := cmdr.NewSubCmd().
 		Titles("build", "b").
-		Description("building operations...", ``)
+		Description("building operations...", ``).
+		AttachTo(root)
 
 	// attachConsulConnectFlags(buildCmd)
 
-	boCmd := buildCmd.NewSubCommand().
+	boCmd := cmdr.NewSubCmd().
 		Titles("one", "1", "single").
 		Description("Build a repos' stars page for an awesome-list", ``).
 		Examples(examplesBuildOne).
-		Action(buildOne)
-	boCmd.NewFlag(cmdr.OptFlagTypeString).
+		Action(buildOne).
+		AttachTo(buildCmd)
+	cmdr.NewString(`./output`).Placeholder(`DIR`).
 		Titles("work-dir", "w", "wdir", "wd").
 		Description("working directory", ``).
-		DefaultValue("./output", "DIR")
-	boCmd.NewFlag(cmdr.OptFlagTypeString).
+		AttachTo(boCmd)
+	cmdr.NewString(`https://github.com/avelino/awesome-go`).Placeholder(`URL`).
 		Titles("source", "s", "src", "src-url").
 		Description("the source awesomeness repo url", ``).
-		DefaultValue("https://github.com/avelino/awesome-go", "URL")
-	boCmd.NewFlag(cmdr.OptFlagTypeString).
+		AttachTo(buildCmd)
+	cmdr.NewString().Placeholder(`NAME`).
 		Titles("name", "n").
 		Description("main name", ``).
-		DefaultValue("", "NAME")
+		AttachTo(buildCmd)
 
 	cmdr.NewInt(-1).
 		HeadLike(true, -1, 65535).
