@@ -28,19 +28,19 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.18.x] # 1.11.x, 1.12.x, 1.13.x,
+        go-version: [1.24.x] # 1.11.x, 1.12.x, 1.13.x,
         #os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
       - name: Checkout code
-        uses: actions/checkout@v2
-      - uses: actions/cache@v2
+        uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -62,14 +62,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18.x
+          go-version: 1.24.x
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         #with:
         #  path: ./src/github.com/${{ github.repository }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -81,11 +81,11 @@ jobs:
           # go install -v github.com/swaggo/swag/cmd/swag
           # go generate ./...
           go test -v -coverprofile=profile.cov ./...
-      - name: Send coverage
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          path-to-profile: profile.cov
-          parallel: true
+      #- name: Send coverage
+      #  uses: shogo82148/actions-goveralls@v1
+      #  with:
+      #    path-to-profile: profile.cov
+      #    parallel: true
 
   release-build:
     needs: coverage
@@ -97,14 +97,14 @@ jobs:
       BINARIES_ASC: ./bin/binaries.asc
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18.x
+          go-version: 1.24.x
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         #with:
         #  path: ./src/github.com/${{ github.repository }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
