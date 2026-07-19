@@ -10,7 +10,7 @@ require (
 	github.com/hedzr/logex v1.11.26
 	github.com/machinebox/graphql v0.2.2
 	github.com/russross/blackfriday/v2 v2.1.0
-	golang.org/x/crypto v0.51.0
+	golang.org/x/crypto v0.52.0
 	gopkg.in/hedzr/errors.v3 v3.3.5
 )
 
